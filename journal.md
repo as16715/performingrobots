@@ -25,5 +25,5 @@ Transmitter Configuration:
  The transmitter was uploaded to the Arduino Uno, with CE and CSN pins defined on A4 and A5, respectively. The LCD displayed “I am a transmitter” after successful initialization.
 
 
-![Alt text](/lcd1.png)
-![Alt text](/lcd2.png)
+![Alt text](/lcd1.jpg)
+![Alt text](/lcd2.jpg)
