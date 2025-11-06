@@ -35,6 +35,3 @@ The transmitter was uploaded to the Arduino Uno, with CE and CSN pins defined on
 ![LCD Display 2](/lcd2.jpg)
 
 
-
-![Alt text](/lcd1.jpg)
-![Alt text](/lcd2.jpg)
