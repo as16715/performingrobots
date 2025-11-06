@@ -56,11 +56,11 @@
 
 // CHANGEHERE
 // For the transmitter
-const int NRF_CE_PIN = A4, NRF_CSN_PIN = A5;
+//const int NRF_CE_PIN = A4, NRF_CSN_PIN = A5;
 
 // CHANGEHERE
 // for the receiver
-//const int NRF_CE_PIN = A11, NRF_CSN_PIN = A15;
+const int NRF_CE_PIN = A11, NRF_CSN_PIN = A15;
 
 // nRF 24L01 pin   name
 //          1      GND
@@ -91,8 +91,8 @@ RF24 radio(NRF_CE_PIN, NRF_CSN_PIN);  // CE, CSN
 // Linh and Luke: Channel 90, addr = 0x33
 
 // CHANGEHERE
-const byte CUSTOM_ADDRESS_BYTE = 0x33;  // change as per the above assignment
-const int CUSTOM_CHANNEL_NUMBER = 90;   // change as per the above assignment
+const byte CUSTOM_ADDRESS_BYTE = 0x73;  // change as per the above assignment
+const int CUSTOM_CHANNEL_NUMBER = 40;   // change as per the above assignment
 
 // Do not make changes here
 const byte xmtrAddress[] = { CUSTOM_ADDRESS_BYTE, CUSTOM_ADDRESS_BYTE, 0xC7, 0xE6, 0xCC };
@@ -126,9 +126,9 @@ void setupRF24Common() {
 }
 
 // CHANGEHERE
-/*
-// Transmitter code
 
+// Transmitter code
+/*
 // Transmitter pin usage
 const int LCD_RS_PIN = 3, LCD_EN_PIN = 2, LCD_D4_PIN = 4, LCD_D5_PIN = 5, LCD_D6_PIN = 6, LCD_D7_PIN = 7;
 const int SW1_PIN = 8, SW2_PIN = 9, SW3_PIN = 10, SW4_PIN = A3, SW5_PIN = A2;
@@ -331,14 +331,14 @@ void clearData() {
 
 // Additional pin usage for receiver
 
-// Adafruit music maker shield
-#define SHIELD_RESET -1  // VS1053 reset pin (unused!)
-#define SHIELD_CS 7      // VS1053 chip select pin (output)
-#define SHIELD_DCS 6     // VS1053 Data/command select pin (output)
-#define CARDCS 4         // Card chip select pin
-// DREQ should be an Int pin, see http://arduino.cc/en/Reference/attachInterrupt
-#define DREQ 3  // VS1053 Data request, ideally an Interrupt pin
-Adafruit_VS1053_FilePlayer musicPlayer = Adafruit_VS1053_FilePlayer(SHIELD_RESET, SHIELD_CS, SHIELD_DCS, DREQ, CARDCS);
+// // Adafruit music maker shield
+// #define SHIELD_RESET -1  // VS1053 reset pin (unused!)
+// #define SHIELD_CS 7      // VS1053 chip select pin (output)
+// #define SHIELD_DCS 6     // VS1053 Data/command select pin (output)
+// #define CARDCS 4         // Card chip select pin
+// // DREQ should be an Int pin, see http://arduino.cc/en/Reference/attachInterrupt
+// #define DREQ 3  // VS1053 Data request, ideally an Interrupt pin
+// Adafruit_VS1053_FilePlayer musicPlayer = Adafruit_VS1053_FilePlayer(SHIELD_RESET, SHIELD_CS, SHIELD_DCS, DREQ, CARDCS);
 
 // Connectors for NeoPixels and Servo Motors are labeled
 // M1 - M6 which is not very useful. Here are the pin
@@ -351,8 +351,8 @@ Adafruit_VS1053_FilePlayer musicPlayer = Adafruit_VS1053_FilePlayer(SHIELD_RESET
 // M6 = 17
 
 // Servo motors
-const int NOSE_SERVO_PIN = 20;
-//const int ANTENNA_SERVO_PIN = 10;
+const int GAVEL_SERVO_PIN = 18;
+//const int CIGAR_SERVO_PIN = 10;
 //const int TAIL_SERVO_PIN = 11;
 //const int GRABBER_SERVO_PIN = 12;
 
@@ -367,15 +367,15 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(8, 8, NEOPIXELPIN,
                             NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE,
                             NEO_GRB            + NEO_KHZ800);
 
-Servo nose;  // change names to describe what's moving
-Servo antenna;
-Servo tail;
-Servo grabber;
-Servo disk;
+Servo gavel;  // change names to describe what's moving
+Servo cigar;
+Servo head;
+// Servo grabber;
+// Servo disk;
 
-// change as per your robot
-const int NOSE_WRINKLE = 45;
-const int NOSE_TWEAK = 90;
+// change as per your robot | servo angles
+const int GAVEL_DOWN = 40;
+const int GAVEL_UP = 60;
 const int TAIL_ANGRY = 0;
 const int TAIL_HAPPY = 180;
 const int GRABBER_RELAX = 0;
@@ -386,7 +386,7 @@ void setup() {
   // printf_begin();
 
   // Set up all the attached hardware
-  setupMusicMakerShield();
+  // setupMusicMakerShield();
   setupServoMotors();
   setupNeoPixels();
 
@@ -407,34 +407,34 @@ void setupRF24() {
   Serial.println(F("I am a receiver"));
 }
 
-void setupMusicMakerShield() {
-  if (!musicPlayer.begin()) {  // initialise the music player
-    Serial.println(F("Couldn't find VS1053, do you have the right pins defined?"));
-    while (1)
-      ;
-  }
-  Serial.println(F("VS1053 found"));
+// void setupMusicMakerShield() {
+//   if (!musicPlayer.begin()) {  // initialise the music player
+//     Serial.println(F("Couldn't find VS1053, do you have the right pins defined?"));
+//     while (1)
+//       ;
+//   }
+//   Serial.println(F("VS1053 found"));
 
-  if (!SD.begin(CARDCS)) {
-    Serial.println(F("SD card failed or not present"));
-    while (1)
-      ;  // don't do anything more
-  }
+//   if (!SD.begin(CARDCS)) {
+//     Serial.println(F("SD card failed or not present"));
+//     while (1)
+//       ;  // don't do anything more
+//   }
 
-  // Set volume for left, right channels. lower numbers == louder volume!
-  musicPlayer.setVolume(20, 20);
+//   // Set volume for left, right channels. lower numbers == louder volume!
+//   musicPlayer.setVolume(20, 20);
 
-  // Timer interrupts are not suggested, better to use DREQ interrupt!
-  //musicPlayer.useInterrupt(VS1053_FILEPLAYER_TIMER0_INT); // timer int
+//   // Timer interrupts are not suggested, better to use DREQ interrupt!
+//   //musicPlayer.useInterrupt(VS1053_FILEPLAYER_TIMER0_INT); // timer int
 
-  // If DREQ is on an interrupt pin (on uno, #2 or #3) we can do background
-  // audio playing
-  musicPlayer.useInterrupt(VS1053_FILEPLAYER_PIN_INT);  // DREQ int
-}
+//   // If DREQ is on an interrupt pin (on uno, #2 or #3) we can do background
+//   // audio playing
+//   musicPlayer.useInterrupt(VS1053_FILEPLAYER_PIN_INT);  // DREQ int
+// }
 
 void setupServoMotors() {
-  nose.attach(NOSE_SERVO_PIN);
-  nose.write(90);
+  gavel.write(0);
+  gavel.attach(GAVEL_SERVO_PIN);
   //  antenna.attach(ANTENNA_SERVO_PIN);
   //  tail.attach(TAIL_SERVO_PIN);
   //  grabber.attach(GRABBER_SERVO_PIN);
@@ -486,37 +486,46 @@ void loop() {
 
     switch (data.stateNumber) {
       case 0:
-        tail.write(TAIL_ANGRY);
+        // tail.write(TAIL_ANGRY);
         // play track 0
         // display something on LEDs
         break;
       case 1:
-        Serial.print(F("moving nose to 180 and drawing rectangle"));
-        nose.write(180);
+        Serial.print(F("GAVEL BANGING (HAND MOTION + SOUND EFFECT)"));
+        gavel.write(GAVEL_DOWN);
+        delay(100);
+        gavel.write(GAVEL_UP);
+        delay(10);
+        gavel.write(GAVEL_DOWN);
+        delay(10);
+        gavel.write(GAVEL_UP);
+        delay(10);
+        gavel.write(GAVEL_DOWN);
+        delay(100);
 
-        matrix.drawRect(2, 2, 5, 5, matrix.Color(200, 90, 30));
-        matrix.show();
+        // matrix.drawRect(2, 2, 5, 5, matrix.Color(200, 90, 30));
+        // matrix.show();
 
-        Serial.println(F("Playing track 002"));
-        musicPlayer.startPlayingFile("/track002.mp3");
-
-        break;
-      case 2:
-        Serial.println(F("moving nose to 30"));
-        nose.write(30);
-
-        matrix.drawRect(2, 2, 5, 5, matrix.Color(0, 200, 30));
-        matrix.show();
-
-        Serial.println(F("Playing track 001"));
-        musicPlayer.startPlayingFile("/track001.mp3");
-        break;
-      case 3:
+        // Serial.println(F("Playing track 002"));
+        // musicPlayer.startPlayingFile("/track002.mp3");
 
         break;
-      case 4:
+      // case 2:
+      //   Serial.println(F("moving nose to 30"));
+      //   nose.write(30);
 
-        break;
+      //   matrix.drawRect(2, 2, 5, 5, matrix.Color(0, 200, 30));
+      //   matrix.show();
+
+      //   Serial.println(F("Playing track 001"));
+      //   musicPlayer.startPlayingFile("/track001.mp3");
+      //   break;
+      // case 3:
+
+      //   break;
+      // case 4:
+
+      //   break;
 
       default:
         Serial.println(F("Invalid option"));
@@ -527,4 +536,5 @@ void loop() {
   }
 }  // end of loop()
 // end of receiver code
+
 // CHANGEHERE
