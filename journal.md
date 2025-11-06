@@ -1,4 +1,4 @@
-Project Journal – nRF24 Communication Setup
+#Project Journal – nRF24 Communication Setup
 Date: [11/6/2025]
  Hardware Used:
 Arduino Uno (Transmitter)
