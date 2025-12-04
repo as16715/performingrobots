@@ -441,8 +441,12 @@ uint32_t headColorRGB(uint8_t r, uint8_t g, uint8_t b)
   return headStrip1.Color(r, g, b);
 }
 
+// For cigar: compensate wiring/type so that calling with
+// (R,G,B) gives correct physical colour. Swap R and G
+// before passing to Color().
 uint32_t cigarColorRGB(uint8_t r, uint8_t g, uint8_t b)
 {
+  // arguments are desired RGB; we send GRB to match behaviour
   return cigarStrip.Color(r, g, b);
 }
 
@@ -570,7 +574,8 @@ void cigarSetColor(uint8_t r, uint8_t g, uint8_t b)
 
 void cigarOff()
 {
-  cigarSetColor(0, 255, 0);
+  // actually off
+  cigarSetColor(0, 0, 0);
 }
 
 // Simple smoking animation: red/orange flicker on the whole ring
@@ -631,6 +636,7 @@ void setDefaultPose()
   cigar.write(CIGAR_DOWN_ANGLE); // cigar down
   cigarOff();                    // cigar NeoPixels off
 }
+
 
 void danceEntranceCase0(unsigned long durationMs)
 {
@@ -885,7 +891,7 @@ void loop()
       // Head turns yellow
       // then reprise Case 0 feel
       Serial.println(F("Case 1: Cigar + 'They look'"));
-      // cigarSmokeAnimation(800);       // quick puff, leave ember on
+      cigarSmokeAnimation(800);       // quick puff, leave ember on
       musicPlayer.playFullFile("/track101.mp3");
       headSetYellow();
       setDefaultPose();
@@ -951,7 +957,7 @@ void loop()
       // Lower cigar, turn head RIGHT
       // Head STAYS default (white)
       Serial.println(F("Case 8: Without wifi"));
-      // cigarSmokeAnimation(800);       // quick puff, leave ember on
+      cigarSmokeAnimation(800);       // quick puff, leave ember on
       cigarOff();
       headSetDefault();
       musicPlayer.playFullFile("/track408.mp3");
@@ -974,7 +980,7 @@ void loop()
       // Track 410 “No, I’m judicially”
       // Head turns yellow
       Serial.println(F("Case 10: No, I'm judicially"));
-      // cigarSmokeAnimation(800);
+      cigarSmokeAnimation(800);
       musicPlayer.playFullFile("/track410.mp3");
       setDefaultPose();
       headSetYellow();
@@ -1075,8 +1081,7 @@ void loop()
       // CIGAR NEO LIGHTS RED
       Serial.println(F("Case 20: Too late (cigar up, red ring)"));
       musicPlayer.playFullFile("/track508.mp3");
-      // cigar.write(CIGAR_UP_ANGLE);
-      // cigarSetColor(255, 0, 0);  // full red ring
+      cigarSetColor(255, 0, 0);  // full red ring (now actually red)
       setDefaultPose();
       break;
 
