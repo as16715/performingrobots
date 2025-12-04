@@ -26,6 +26,9 @@ const int EN2_PIN = 11;
 int MIN_PWM_M1 = 25;
 int MIN_PWM_M2 = 35;     // Motor 2 needs more "kick" to spin
 
+// Maximum turn speed (reduced from 180 for better control)
+int MAX_TURN_SPEED = 100;  // Adjust this value between 80-120 to tune turning speed
+
 uint16_t rc_values[RC_NUM_CHANNELS];
 uint32_t rc_start[RC_NUM_CHANNELS];
 volatile uint16_t rc_shared[RC_NUM_CHANNELS];
@@ -96,7 +99,7 @@ void loop() {
   bool neutral_turn = (rc_values[RC_CH1] > 1300 && rc_values[RC_CH1] < 1700);
 
   // ============================================================
-  // FORWARD / REVERSE - Now proportional to trigger position
+  // FORWARD / REVERSE - Proportional to trigger position
   // ============================================================
   if (rc_values[RC_CH2] > 1700) {
     // Forward - map the trigger position to motor speed
@@ -113,16 +116,16 @@ void loop() {
   }
 
   // ============================================================
-  // TURNING - Now proportional to steering knob position
+  // TURNING - Reduced maximum speed for better control
   // ============================================================
   if (rc_values[RC_CH1] > 1750) {
-    // Right turn - map the knob position to turn speed
-    int speed = map(rc_values[RC_CH1], 1750, 2500, MIN_PWM_M1, 180);
+    // Right turn - map to reduced max speed
+    int speed = map(rc_values[RC_CH1], 1750, 2500, MIN_PWM_M1, MAX_TURN_SPEED);
     right(speed);
   }
   else if (rc_values[RC_CH1] < 1250) {
-    // Left turn - map the knob position to turn speed
-    int speed = map(rc_values[RC_CH1], 600, 1250, 180, MIN_PWM_M1);
+    // Left turn - map to reduced max speed
+    int speed = map(rc_values[RC_CH1], 600, 1250, MAX_TURN_SPEED, MIN_PWM_M1);
     left(speed);
   }
 }
