@@ -26,8 +26,8 @@ const int EN2_PIN = 11;
 int MIN_PWM_M1 = 25;
 int MIN_PWM_M2 = 35;     // Motor 2 needs more "kick" to spin
 
-// Maximum turn speed (reduced from 180 for better control)
-int MAX_TURN_SPEED = 100;  // Adjust this value between 80-120 to tune turning speed
+// Maximum turn speed (increased to prevent stalling)
+int MAX_TURN_SPEED = 160;  // Adjust this value between 130-180 to tune turning speed
 
 uint16_t rc_values[RC_NUM_CHANNELS];
 uint32_t rc_start[RC_NUM_CHANNELS];
@@ -116,16 +116,16 @@ void loop() {
   }
 
   // ============================================================
-  // TURNING - Reduced maximum speed for better control
+  // TURNING - With higher minimum speed to overcome load
   // ============================================================
   if (rc_values[RC_CH1] > 1750) {
-    // Right turn - map to reduced max speed
-    int speed = map(rc_values[RC_CH1], 1750, 2500, MIN_PWM_M1, MAX_TURN_SPEED);
+    // Right turn - start at higher minimum for better torque
+    int speed = map(rc_values[RC_CH1], 1750, 2500, 100, MAX_TURN_SPEED);
     right(speed);
   }
   else if (rc_values[RC_CH1] < 1250) {
-    // Left turn - map to reduced max speed
-    int speed = map(rc_values[RC_CH1], 600, 1250, MAX_TURN_SPEED, MIN_PWM_M1);
+    // Left turn - start at higher minimum for better torque
+    int speed = map(rc_values[RC_CH1], 600, 1250, MAX_TURN_SPEED, 100);
     left(speed);
   }
 }
