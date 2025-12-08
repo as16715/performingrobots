@@ -48,18 +48,6 @@
 // Common code
 //
 
-// Common pin usage
-// Note there are additional pins unique to transmitter or receiver
-//
-
-// nRF24L01 uses SPI which is fixed
-// on pins 11, 12, and 13 on the Uno
-// and on pins 50, 51, and 52 on the Mega
-
-// It also requires two other signals
-// (CE = Chip Enable, CSN = Chip Select Not)
-// Which can be any pins:
-
 // CHANGEHERE
 // For the transmitter
 // const int NRF_CE_PIN = A4, NRF_CSN_PIN = A5;
@@ -68,24 +56,10 @@
 // for the receiver
 const int NRF_CE_PIN = A11, NRF_CSN_PIN = A15;
 
-// nRF 24L01 pin   name
-//          1      GND
-//          2      3.3V
-//          3      CE
-//          4      CSN
-//          5      SCLK
-//          6      MOSI/COPI
-//          7      MISO/CIPO
-
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
 RF24 radio(NRF_CE_PIN, NRF_CSN_PIN); // CE, CSN
-
-// #include <printf.h>  // for debugging
-
-// See note in rf24Handshaking about address selection
-//
 
 // CHANGEHERE
 const byte CUSTOM_ADDRESS_BYTE = 0x73; // change as per the above assignment
@@ -107,12 +81,10 @@ struct DataStruct
 };
 DataStruct data;
 
-// *** MODIFICATION: Add a "busy" flag for the transmitter ***
 bool isTransmitting = false;
 
 void setupRF24Common()
 {
-  // RF24 setup
   if (!radio.begin())
   {
     Serial.println(F("radio  initialization failed"));
@@ -129,7 +101,7 @@ void setupRF24Common()
   radio.setPALevel(RF24_POWER_LEVEL);
 }
 
-// CHANGEHERE
+// ============ TRANSMITTER CODE (COMMENTED OUT HERE) =============
 /*
 // Transmitter code
 
@@ -137,44 +109,40 @@ void setupRF24Common()
 const int LCD_RS_PIN = 3, LCD_EN_PIN = 2, LCD_D4_PIN = 4, LCD_D5_PIN = 5, LCD_D6_PIN = 6, LCD_D7_PIN = 7;
 const int SW1_PIN = 8, SW2_PIN = 9, SW3_PIN = 10, SW4_PIN = A3, SW5_PIN = A2;
 
-// LCD library code
 #include <LiquidCrystal.h>
-
-// initialize the library with the relevant pins
 LiquidCrystal lcd(LCD_RS_PIN, LCD_EN_PIN, LCD_D4_PIN, LCD_D5_PIN, LCD_D6_PIN, LCD_D7_PIN);
 
-// EDIT
 const int NUM_OF_STATES = 32;
 char *theStates[] = {
-    // Scene 1 (Track 1)
-    "Scene 1.1",
-    // Scene 3 (Tracks 2–12)
-    "Scene 4.1",
-    "Scene 4.2",
-    "Scene 4.3",
-    "Scene 4.4",
-    "Scene 4.5",
-    "Scene 4.6",
-    "Scene 4.7",
-    "Scene 4.8",
-    "Scene 4.9",
-    "Scene 4.10",
-    "Scene 4.11",
-    // Scene 5 (Tracks 13–20)
-    "Scene 5.1",
-    "Scene 5.2",
-    "Scene 5.3",
-    "Scene 5.4",
-    "Scene 5.5",
-    "Scene 5.6",
-    "Scene 5.7",
-    "Scene 5.8"};
+    "Smoke",
+    "Gavel",
+    "Dance",
+    "They",
+    "Court",
+    "Logs",
+    "Prepos",
+    "Over",
+    "Impos",
+    "Succu",
+    "WoWifi",
+    "Object",
+    "NoImJu",
+    "CtAdj",
+    "Scene4.11",
+    "Court2",
+    "Salsa",
+    "ChildDo",
+    "ChiPvt",
+    "Scene5.5",
+    "SySmt",
+    "Scene5.7",
+    "TooLate"};
 
 void updateLCD()
 {
   lcd.clear();
   lcd.print(theStates[data.stateNumber]);
-  lcd.setCursor(0, 1); // column, line (from 0)
+  lcd.setCursor(0, 1);
   lcd.print("not transmitted yet");
 }
 
@@ -197,34 +165,20 @@ void spare2() {}
 
 void rf24SendData()
 {
-
-  // // *** MODIFICATION: Prevent re-entry if already transmitting ***
-  // if (isTransmitting) {
-  //   Serial.println(F("Already transmitting, please wait."));
-  //   // We can even tell the user on the LCD
-  //   lcd.setCursor(0, 1);
-  //   lcd.print("Busy...         ");
-  //   return; // Exit the function immediately
-  // }
-  // isTransmitting = true; // Set the flag so we can't run again
-
-  radio.stopListening(); // go into transmit mode
-  // The write() function will block
-  // until the message is successfully acknowledged by the receiver
-  // or the timeout/retransmit maxima are reached.
+  radio.stopListening();
   int retval = radio.write(&data, sizeof(data));
 
   lcd.clear();
-  lcd.setCursor(0, 0); // column, line (from 0)
+  lcd.setCursor(0, 0);
   lcd.print("transmitting");
-  lcd.setCursor(14, 0); // column, line (from 0)
+  lcd.setCursor(14, 0);
   lcd.print(data.stateNumber);
 
   Serial.print(F(" ... "));
   if (retval)
   {
     Serial.println(F("success"));
-    lcd.setCursor(0, 1); // column, line (from 0)
+    lcd.setCursor(0, 1);
     lcd.print("success");
   }
   else
@@ -233,14 +187,11 @@ void rf24SendData()
     Serial.print(F("failure, total failures = "));
     Serial.println(totalTransmitFailures);
 
-    lcd.setCursor(0, 1); // column, line (from 0)
+    lcd.setCursor(0, 1);
     lcd.print("error, total=");
-    lcd.setCursor(13, 1); // column, line (from 0)
+    lcd.setCursor(13, 1);
     lcd.print(totalTransmitFailures);
   }
-
-  // *** MODIFICATION: Clear the "busy" flag when done ***
-  // isTransmitting = false;
 }
 
 class Button
@@ -250,15 +201,13 @@ class Button
   void (*buttonFunction)();
 
 public:
-  // Constructor
   Button(int pn, void *bf)
   {
     pinNumber = pn;
-    buttonFunction = bf;
+    buttonFunction = (void (*)())bf;
     previousState = 1;
   }
 
-  // update the button
   void update()
   {
     bool currentState = digitalRead(pinNumber);
@@ -275,22 +224,20 @@ public:
 
 const int NUMBUTTONS = 5;
 Button theButtons[] = {
-    Button(SW1_PIN, countDown),
-    Button(SW2_PIN, rf24SendData),
-    Button(SW3_PIN, countUp),
-    Button(SW4_PIN, spare1),
-    Button(SW5_PIN, spare2),
+    Button(SW1_PIN, (void *)countDown),
+    Button(SW2_PIN, (void *)rf24SendData),
+    Button(SW3_PIN, (void *)countUp),
+    Button(SW4_PIN, (void *)spare1),
+    Button(SW5_PIN, (void *)spare2),
 };
 
 void setupRF24()
 {
   setupRF24Common();
 
-  // Set us as a transmitter
   radio.openWritingPipe(xmtrAddress);
   radio.openReadingPipe(1, rcvrAddress);
 
-  // radio.printPrettyDetails();
   Serial.println(F("I am a transmitter"));
   data.stateNumber = 0;
 }
@@ -300,13 +247,10 @@ void setup()
   Serial.begin(9600);
   Serial.println(F("Setting up LCD"));
 
-  // set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
   lcd.clear();
-  // Print a message to the LCD.
   lcd.print("Radio setup");
 
-  // Display the address in hex
   lcd.setCursor(0, 1);
   lcd.print("addr 0x");
   lcd.setCursor(7, 1);
@@ -314,7 +258,6 @@ void setup()
   sprintf(s, "%02x", CUSTOM_ADDRESS_BYTE);
   lcd.print(s);
 
-  // Display the channel number
   lcd.setCursor(10, 1);
   lcd.print("ch");
   lcd.setCursor(13, 1);
@@ -323,12 +266,10 @@ void setup()
   Serial.println(F("Setting up radio"));
   setupRF24();
 
-  // If setupRF24 returned then the radio is set up
   lcd.setCursor(0, 0);
-  lcd.print("Radio OK state=");
+  lcd.print("Radio OK ");
   lcd.print(theStates[data.stateNumber]);
 
-  // Initialize the switches
   pinMode(SW1_PIN, INPUT_PULLUP);
   pinMode(SW2_PIN, INPUT_PULLUP);
   pinMode(SW3_PIN, INPUT_PULLUP);
@@ -342,88 +283,72 @@ void loop()
   {
     theButtons[i].update();
   }
-  delay(50); // for testing
+  delay(50);
 }
 
 void clearData()
 {
-  // set all fields to 0
   data.stateNumber = 0;
 }
 */
-// End of transmitter code
-// CHANGEHERE
+// ============ END TRANSMITTER (COMMENTED) =============
 
-// Receiver Code
-// CHANGEHERE
 
-// Additional libraries for music maker shield
+// ================= RECEIVER CODE ======================
+
 #include <Adafruit_VS1053.h>
 #include <SD.h>
-
-// Servo library
 #include <Servo.h>
-
-// NeoPixel strip for HEAD NEOPIXELS + CIGAR NEOPIXEL
 #include <Adafruit_NeoPixel.h>
 
-// ===== Music Maker Shield pins =====
-#define SHIELD_RESET -1 // VS1053 reset pin (unused!)
-#define SHIELD_CS 7     // VS1053 chip select pin (output)
-#define SHIELD_DCS 6    // VS1053 Data/command select pin (output)
-#define CARDCS 4        // SD card chip select pin
-#define DREQ 3          // VS1053 Data request, ideally an Interrupt pin
+// Music Maker Shield pins
+#define SHIELD_RESET -1
+#define SHIELD_CS 7
+#define SHIELD_DCS 6
+#define CARDCS 4
+#define DREQ 3
 
 Adafruit_VS1053_FilePlayer musicPlayer = Adafruit_VS1053_FilePlayer(
     SHIELD_RESET, SHIELD_CS, SHIELD_DCS, DREQ, CARDCS);
 
-// Connectors for NeoPixels and Servo Motors are labeled
-// M1 - M6 with these pin assignments on nRF_Servo_Mega:
-// M1 = 19
-// M2 = 21
-// M3 = 20
-// M4 = 16
-// M5 = 18
-// M6 = 17
-//
-// Your mapping:
-// M6 head servo
-// M5 gavel servo
-// M3 cigar servo
-// M2 cigar NeoPixel  (16-pixel ring)
-// M1 head NeoPixel   (16-pixel ring)
-// M4 head NeoPixel   (16-pixel ring)
-
-// ===== Servo pins =====
-const int GAVEL_SERVO_PIN = 18; // M5: gavel
-const int CIGAR_SERVO_PIN = 20; // M3: cigar
-const int HEAD_SERVO_PIN = 17;  // M6: head
+// Servo pins / mapping
+const int GAVEL_SERVO_PIN = 18; // M5
+const int CIGAR_SERVO_PIN = 20; // M3
+const int HEAD_SERVO_PIN  = 17; // M6
 
 Servo gavel;
 Servo cigar;
 Servo head;
 
+// Servo IDs for smooth helper
+enum
+{
+  SERVO_HEAD  = 0,
+  SERVO_GAVEL = 1,
+  SERVO_CIGAR = 2
+};
+
 // Gavel angles
-const int GAVEL_REST_ANGLE = 90; // neutral
-const int GAVEL_UP_ANGLE = 90;   // up (semantic, same numeric for now)
-const int GAVEL_BANG_ANGLE = 60; // down on table
+const int GAVEL_REST_ANGLE = 150;
+const int GAVEL_UP_ANGLE   = 50;
+const int GAVEL_BANG_ANGLE = 90;
 
 // Cigar angles
-const int CIGAR_DOWN_ANGLE = 30; // lowered, not smoking
-const int CIGAR_UP_ANGLE = 120;  // up near mouth
+const int CIGAR_DOWN_ANGLE = 70;
+const int CIGAR_UP_ANGLE   = 180;
 
-// Head angles (tune in rehearsal)
-const int HEAD_CENTER_ANGLE = 130; // facing front
-const int HEAD_RIGHT_ANGLE = 90;   // turn right
-const int HEAD_LEFT_ANGLE = 180;   // turn left
+// Head angles
+const int HEAD_CENTER_ANGLE = 130;
+const int HEAD_RIGHT_ANGLE  = 90;
+const int HEAD_LEFT_ANGLE   = 180;
 
-// ===== NeoPixel configuration =====
-const uint8_t HEAD_LED_COUNT = 16;  // each head ring is 16 pixels
-const uint8_t CIGAR_LED_COUNT = 16; // cigar ring is 16 pixels
+// NeoPixel configuration
+const uint8_t HEAD_LED_COUNT  = 16;
+const uint8_t CIGAR_LED_COUNT = 16;
 
 const int HEAD_NEOPIXEL_PIN_1 = 19; // M1
 const int HEAD_NEOPIXEL_PIN_2 = 16; // M4
-const int CIGAR_NEOPIXEL_PIN = 21;  // M2
+const int CIGAR_NEOPIXEL_PIN  = 21; // M2
 
 Adafruit_NeoPixel headStrip1 = Adafruit_NeoPixel(
     HEAD_LED_COUNT, HEAD_NEOPIXEL_PIN_1, NEO_GRB + NEO_KHZ800);
@@ -432,25 +357,18 @@ Adafruit_NeoPixel headStrip2 = Adafruit_NeoPixel(
 Adafruit_NeoPixel cigarStrip = Adafruit_NeoPixel(
     CIGAR_LED_COUNT, CIGAR_NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
-// ----- Small helpers for colors and simple actions -----
+// ----- Colour helpers -----
 
-// Map logical RGB to library's Color(r,g,b). The NEO_GRB flag
-// inside Adafruit_NeoPixel handles the physical GRB wiring.
 uint32_t headColorRGB(uint8_t r, uint8_t g, uint8_t b)
 {
   return headStrip1.Color(r, g, b);
 }
 
-// For cigar: compensate wiring/type so that calling with
-// (R,G,B) gives correct physical colour. Swap R and G
-// before passing to Color().
 uint32_t cigarColorRGB(uint8_t r, uint8_t g, uint8_t b)
 {
-  // arguments are desired RGB; we send GRB to match behaviour
   return cigarStrip.Color(r, g, b);
 }
 
-// Standard rainbow wheel for head ring (kept for reference, not used by cases now).
 uint32_t Wheel(byte WheelPos)
 {
   WheelPos = 255 - WheelPos;
@@ -467,7 +385,7 @@ uint32_t Wheel(byte WheelPos)
   return headColorRGB(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
 
-// ----- HEAD NEOPIXELS (mood) -----
+// ----- Head NeoPixels -----
 
 void headSetColor(uint8_t r, uint8_t g, uint8_t b)
 {
@@ -481,24 +399,20 @@ void headSetColor(uint8_t r, uint8_t g, uint8_t b)
   headStrip2.show();
 }
 
-// semantic wrappers (standard RGB)
-void headSetDefault() { headSetColor(255, 255, 255); } // white = default
-void headSetRed() { headSetColor(255, 0, 0); }         // angry
-void headSetYellow() { headSetColor(255, 255, 0); }    // humour
-void headSetGreen() { headSetColor(0, 255, 0); }       // calm/relief
-void headSetPink() { headSetColor(255, 0, 128); }      // salsa/soft pink
+void headSetDefault() { headSetColor(255, 255, 255); }
+void headSetRed()     { headSetColor(255, 0, 0); }
+void headSetYellow()  { headSetColor(255, 255, 0); }
+void headSetGreen()   { headSetColor(0, 255, 0); }
+void headSetPink()    { headSetColor(255, 0, 128); }
 
-// Case 0 / Case 14 colour wheel:
-// PINK -> YELLOW -> PURPLE -> GREEN -> CYAN
-// flashing one after the other in a loop.
 void headColorWheelAnimation(unsigned long durationMs)
 {
   const uint8_t COLORS[5][3] = {
-      {255, 0, 128}, // pink   (R,G,B)
-      {255, 255, 0}, // yellow
-      {160, 0, 255}, // purple
-      {0, 255, 0},   // green
-      {0, 255, 255}  // cyan
+      {255, 0,   128},
+      {255, 255, 0},
+      {160, 0,   255},
+      {0,   255, 0},
+      {0,   255, 255}
   };
 
   unsigned long start = millis();
@@ -511,7 +425,6 @@ void headColorWheelAnimation(unsigned long durationMs)
   }
 }
 
-// Red–yellow alternating stripes (guilty)
 void headRedYellowAltAnimation(unsigned long durationMs)
 {
   unsigned long start = millis();
@@ -523,12 +436,12 @@ void headRedYellowAltAnimation(unsigned long durationMs)
       bool isRed = ((i + (flip ? 1 : 0)) % 2 == 0);
       if (isRed)
       {
-        headStrip1.setPixelColor(i, headColorRGB(255, 0, 0)); // red
+        headStrip1.setPixelColor(i, headColorRGB(255, 0, 0));
         headStrip2.setPixelColor(i, headColorRGB(255, 0, 0));
       }
       else
       {
-        headStrip1.setPixelColor(i, headColorRGB(255, 255, 0)); // yellow
+        headStrip1.setPixelColor(i, headColorRGB(255, 255, 0));
         headStrip2.setPixelColor(i, headColorRGB(255, 255, 0));
       }
     }
@@ -539,13 +452,12 @@ void headRedYellowAltAnimation(unsigned long durationMs)
   }
 }
 
-// Blushing: different shades of pink pulsing
 void headBlushAnimation(unsigned long durationMs)
 {
   const uint8_t SHADES[3][3] = {
-      {255, 40, 140}, // light pink
-      {255, 80, 180}, // brighter pink
-      {255, 0, 128}   // base pink
+      {255, 40, 140},
+      {255, 80, 180},
+      {255, 0,  128}
   };
 
   unsigned long start = millis();
@@ -556,11 +468,10 @@ void headBlushAnimation(unsigned long durationMs)
     delay(160);
     idx = (idx + 1) % 3;
   }
-  // Land on soft pink
   headSetPink();
 }
 
-// ----- CIGAR NEOPIXEL (smoking ember / ring) -----
+// ----- Cigar NeoPixel -----
 
 void cigarSetColor(uint8_t r, uint8_t g, uint8_t b)
 {
@@ -574,182 +485,215 @@ void cigarSetColor(uint8_t r, uint8_t g, uint8_t b)
 
 void cigarOff()
 {
-  // actually off
   cigarSetColor(0, 0, 0);
 }
 
-// Simple smoking animation: red/orange flicker on the whole ring
+// Smoking animation with orange-red ember
 void cigarSmokeAnimation(unsigned long durationMs)
 {
   unsigned long start = millis();
-  cigar.write(CIGAR_UP_ANGLE); // lift cigar to mouth
+
+  // Smooth lift to mouth locally
+  int step = 3;
+  int delayMs = 15;
+  int current = cigar.read();
+  int dir = (CIGAR_UP_ANGLE > current) ? 1 : -1;
+  for (int pos = current; dir > 0 ? pos <= CIGAR_UP_ANGLE : pos >= CIGAR_UP_ANGLE; pos += dir * step)
+  {
+    cigar.write(pos);
+    delay(delayMs);
+  }
+  cigar.write(CIGAR_UP_ANGLE);
+
   while (millis() - start < durationMs)
   {
-    uint8_t red = random(180, 255);
-    uint8_t green = random(40, 120); // orange-ish
-    cigarSetColor(red, green, 0);
+    uint8_t red   = random(230, 255);
+    uint8_t green = random(30, 80);
+    uint8_t blue  = 0;
+    cigarSetColor(red, green, blue);
     delay(80);
   }
-  // leave a dim ember until explicitly lowered
-  cigarSetColor(120, 30, 0);
+
+  cigarSetColor(180, 40, 0);
 }
 
-// ----- Gavel helpers -----
+// ----- Smooth servo helper (no Servo& in signature) -----
+
+void moveServoSmooth(int whichServo, int targetAngle, int step, int delayMs)
+{
+  Servo *s;
+
+  if (whichServo == SERVO_HEAD)
+    s = &head;
+  else if (whichServo == SERVO_GAVEL)
+    s = &gavel;
+  else
+    s = &cigar;
+
+  int current = s->read();
+  if (current == targetAngle) return;
+
+  int dir = (targetAngle > current) ? 1 : -1;
+
+  for (int pos = current; dir > 0 ? pos <= targetAngle : pos >= targetAngle; pos += dir * step)
+  {
+    s->write(pos);
+    delay(delayMs);
+  }
+
+  s->write(targetAngle);
+}
+
+// ----- Gavel helpers using smooth -----
 
 void gavelToRest()
 {
-  gavel.write(GAVEL_REST_ANGLE);
+  moveServoSmooth(SERVO_GAVEL, GAVEL_REST_ANGLE, 3, 15);
 }
 
 void gavelUp()
 {
-  gavel.write(GAVEL_UP_ANGLE);
+  moveServoSmooth(SERVO_GAVEL, GAVEL_UP_ANGLE, 3, 15);
 }
 
 void gavelBangOnce()
 {
-  gavel.write(GAVEL_BANG_ANGLE);
-  delay(150);
-  gavelToRest();
-  delay(100);
+  gavelUp();
+  moveServoSmooth(SERVO_GAVEL, GAVEL_BANG_ANGLE, 4, 12);
+  moveServoSmooth(SERVO_GAVEL, GAVEL_REST_ANGLE, 4, 15);
 }
 
 void gavelBangTwice()
 {
   gavelBangOnce();
-  delay(120);
+  delay(180);
   gavelBangOnce();
 }
 
-// ----- Head movement helpers -----
+// ----- Head helpers using smooth -----
 
-void headLookCenter() { head.write(HEAD_CENTER_ANGLE); }
-void headLookRight() { head.write(HEAD_RIGHT_ANGLE); }
-void headLookLeft() { head.write(HEAD_LEFT_ANGLE); }
-
-// Default pose helper: head white + centered, gavel down, cigar down, cigar Neo off
-void setDefaultPose()
+void headLookCenter()
 {
-  headSetDefault();              // head NeoPixels white
-  headLookCenter();              // head servo center
-  gavel.write(GAVEL_REST_ANGLE); // gavel down
-  cigar.write(CIGAR_DOWN_ANGLE); // cigar down
-  cigarOff();                    // cigar NeoPixels off
+  moveServoSmooth(SERVO_HEAD, HEAD_CENTER_ANGLE, 2, 15);
 }
 
+void headLookRight()
+{
+  moveServoSmooth(SERVO_HEAD, HEAD_RIGHT_ANGLE, 2, 15);
+}
+
+void headLookLeft()
+{
+  moveServoSmooth(SERVO_HEAD, HEAD_LEFT_ANGLE, 2, 15);
+}
+
+// ----- Default pose -----
+
+void setDefaultPose()
+{
+  headSetDefault();
+  cigarOff();
+
+  moveServoSmooth(SERVO_HEAD,  HEAD_CENTER_ANGLE, 2, 15);
+  moveServoSmooth(SERVO_GAVEL, GAVEL_REST_ANGLE,  3, 15);
+  moveServoSmooth(SERVO_CIGAR, CIGAR_DOWN_ANGLE,  3, 15);
+}
+
+// ----- Dance + expressive motions -----
 
 void danceEntranceCase0(unsigned long durationMs)
 {
-  // Combined "dance entrance" for Case 0:
-  // - Head sways VERY SLOWLY LEFT <-> RIGHT
-  // - Gavel and cigar move in alternating up/down pattern
-  // - Head colour wheel: PINK -> YELLOW -> PURPLE -> GREEN -> CYAN
-
-  const uint8_t COLORS[5][3] = {
-      {255, 0, 128}, // pink
-      {255, 255, 0}, // yellow
-      {160, 0, 255}, // purple
-      {0, 255, 0},   // green
-      {0, 255, 255}  // cyan
+  // Soft pastel-ish mood colours
+  const uint8_t COLORS[4][3] = {
+      {255, 200, 220}, // soft pink
+      {255, 240, 180}, // warm cream / light yellow
+      {200, 230, 255}, // light blue
+      {210, 255, 210}  // pale green
   };
 
-  // MUCH slower timings for a human-like, relaxed dance
-  const unsigned long COLOR_INTERVAL = 1300;  // ms between colour changes
-  const unsigned long HEAD_STEP_INT = 260;    // ms between head steps (slow)
-  const unsigned long HAND_TOGGLE_INT = 1800; // ms between gavel/cigar swaps
+  const unsigned long COLOR_INTERVAL = 2200; // very slow colour changes
+  const unsigned long HEAD_STEP_INT  = 400;  // slow head movement
 
-  const int HEAD_STEP = 1;                     // degrees per step (tiny)
-  const int HEAD_MIN_ANGLE = HEAD_LEFT_ANGLE;  // left limit
-  const int HEAD_MAX_ANGLE = HEAD_RIGHT_ANGLE; // right limit
+  const int HEAD_STEP      = 10;                       // tiny steps
+  const int HEAD_MIN_ANGLE = HEAD_CENTER_ANGLE - 20;  // small sway only
+  const int HEAD_MAX_ANGLE = HEAD_CENTER_ANGLE + 20;  // small sway only
 
-  // Initial state
-  unsigned long startTime = millis();
+  unsigned long startTime       = millis();
   unsigned long lastColorChange = startTime;
-  unsigned long lastHeadStep = startTime;
-  unsigned long lastHandToggle = startTime;
+  unsigned long lastHeadStep    = startTime;
 
   uint8_t colorIndex = 0;
 
   int headAngle = HEAD_CENTER_ANGLE;
-  int headDir = -1; // -1 = moving toward left, +1 = toward right
+  int headDir   = -1;
 
-  bool handsState = false; // false: gavel up, cigar down; true: gavel down, cigar up
+  bool cigarRaised = false; // we will lift cigar ONCE, mid-dance
 
-  // Initialize positions and colour
-  head.write(headAngle);
-  gavelUp();
-  cigar.write(CIGAR_DOWN_ANGLE);
+  // Initial gentle pose
+  moveServoSmooth(SERVO_HEAD,  HEAD_CENTER_ANGLE, 2, 15);
+  moveServoSmooth(SERVO_GAVEL, GAVEL_REST_ANGLE,  3, 15);
+  moveServoSmooth(SERVO_CIGAR, CIGAR_DOWN_ANGLE,  3, 15);
   cigarOff();
+
   headSetColor(COLORS[colorIndex][0], COLORS[colorIndex][1], COLORS[colorIndex][2]);
 
   while (millis() - startTime < durationMs)
   {
     unsigned long now = millis();
 
-    // ----- Update head colour wheel -----
+    // --- Very slow colour fade-through ---
     if (now - lastColorChange >= COLOR_INTERVAL)
     {
       lastColorChange = now;
-      colorIndex = (colorIndex + 1) % 5;
+      colorIndex = (colorIndex + 1) % 4;
       headSetColor(COLORS[colorIndex][0], COLORS[colorIndex][1], COLORS[colorIndex][2]);
     }
 
-    // ----- Update head sway (VERY SLOW LEFT <-> RIGHT) -----
+    // --- Small, graceful head sway around centre ---
     if (now - lastHeadStep >= HEAD_STEP_INT)
     {
       lastHeadStep = now;
 
       headAngle += headDir * HEAD_STEP;
 
-      // Bounce at edges
       if (headAngle <= HEAD_MIN_ANGLE)
       {
         headAngle = HEAD_MIN_ANGLE;
-        headDir = +1;
+        headDir   = +1;
       }
       else if (headAngle >= HEAD_MAX_ANGLE)
       {
         headAngle = HEAD_MAX_ANGLE;
-        headDir = -1;
+        headDir   = -1;
       }
 
-      head.write(headAngle);
+      head.write(headAngle); // tiny continuous adjustments
     }
 
-    // ----- Update hands: gavel & cigar alternate up/down (slow) -----
-    if (now - lastHandToggle >= HAND_TOGGLE_INT)
+    // --- One elegant cigar gesture halfway through ---
+    if (!cigarRaised && (now - startTime > durationMs / 2))
     {
-      lastHandToggle = now;
-      handsState = !handsState;
-
-      if (!handsState)
-      {
-        // State 0: gavel UP, cigar down
-        gavelUp();
-        cigar.write(CIGAR_DOWN_ANGLE);
-      }
-      else
-      {
-        // State 1: gavel DOWN (bang-ish), cigar up
-        gavel.write(GAVEL_BANG_ANGLE);
-        cigar.write(CIGAR_UP_ANGLE);
-      }
+      cigarRaised = true;
+      // Slow, elegant lift + soft ember glow
+      moveServoSmooth(SERVO_CIGAR, CIGAR_UP_ANGLE, 3, 18);
+      cigarSetColor(220, 70, 10); // warm orange-red ember
+      delay(400);
+      moveServoSmooth(SERVO_CIGAR, CIGAR_DOWN_ANGLE, 3, 18);
+      cigarSetColor(140, 30, 0);  // dimmer ember
     }
 
-    // Tiny pause so we don't hammer the CPU
     delay(10);
   }
 
-  // Gently settle to neutral after dance
-  headLookCenter();
-  gavelToRest();
-  cigar.write(CIGAR_DOWN_ANGLE);
+  // Gently return to neutral, composed pose
+  setDefaultPose();
 }
 
-// “No, no” head shake (kept as small, deliberate movement)
+
+// “No, no” head shake
 void headShakeNo()
 {
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 2; i++)
   {
     headLookRight();
     delay(220);
@@ -759,33 +703,29 @@ void headShakeNo()
   headLookCenter();
 }
 
-// Slow left → right → left look (no jitter)
+// Slow left → right → left look
 void headSlowJitterToWife()
 {
   headLookLeft();
   delay(600);
   headLookRight();
   delay(600);
-  headLookLeft();
-  delay(600);
 }
 
-// Gavel + cigar accent (smoothed, no jittery twitch)
+// Gavel + cigar accent
 void gavelAndCigarJitter()
 {
-  // 3 slow accented motions rather than fast jitter
   for (int i = 0; i < 3; i++)
   {
-    gavel.write(GAVEL_BANG_ANGLE);
-    cigar.write(CIGAR_UP_ANGLE);
+    gavelBangOnce();
+    moveServoSmooth(SERVO_CIGAR, CIGAR_UP_ANGLE, 3, 15);
     cigarSetColor(255, 50, 0);
     delay(220);
-    gavelToRest();
-    cigar.write(CIGAR_DOWN_ANGLE);
+    moveServoSmooth(SERVO_CIGAR, CIGAR_DOWN_ANGLE, 3, 15);
     cigarOff();
     delay(220);
   }
-  cigar.write(CIGAR_DOWN_ANGLE);
+  moveServoSmooth(SERVO_CIGAR, CIGAR_DOWN_ANGLE, 3, 15);
   gavelToRest();
 }
 
@@ -809,7 +749,7 @@ void setupMusicMakerShield()
   }
 
   musicPlayer.setVolume(20, 20);
-  musicPlayer.useInterrupt(VS1053_FILEPLAYER_PIN_INT); // DREQ int
+  musicPlayer.useInterrupt(VS1053_FILEPLAYER_PIN_INT);
 }
 
 void setupServoMotors()
@@ -836,14 +776,12 @@ void setupRF24()
 {
   setupRF24Common();
 
-  // Set us as a receiver
   radio.openWritingPipe(rcvrAddress);
   radio.openReadingPipe(1, xmtrAddress);
 
   Serial.println(F("I am a receiver"));
 }
 
-// USER RECEIVER SETUP
 void setup()
 {
   Serial.begin(9600);
@@ -852,11 +790,11 @@ void setup()
   setupServoMotors();
 
   headStrip1.begin();
-  headStrip1.show(); // all off
+  headStrip1.show();
   headStrip2.begin();
-  headStrip2.show(); // all off
+  headStrip2.show();
   cigarStrip.begin();
-  cigarStrip.show(); // all off
+  cigarStrip.show();
 
   setupRF24();
   flashHeadPixels();
@@ -876,223 +814,176 @@ void loop()
 
     switch (data.stateNumber)
     {
-
-      // ===== CASE 0–20: YOUR ROBOT MAPPING =====
-
     case 0:
-      Serial.println(F("Case 0: Dance entrance"));
-      danceEntranceCase0(6000); // run combined routine for ~6 seconds
+      cigarSmokeAnimation(2400);
+      headSetYellow();
+      setDefaultPose();
       break;
 
     case 1:
-      // Cigar
-      // Head turns RIGHT
-      // Track101 “They look”
-      // Head turns yellow
-      // then reprise Case 0 feel
-      Serial.println(F("Case 1: Cigar + 'They look'"));
-      cigarSmokeAnimation(800);       // quick puff, leave ember on
+      headSetRed();
+      gavelBangOnce();
+      setDefaultPose();
+      break;
+
+    case 2:
+      Serial.println(F("Case 2: Dance entrance"));
+      danceEntranceCase0(6000);
+      break;
+
+    case 3:
+      Serial.println(F("Case 3: Cigar + 'They look'"));
+      cigarSmokeAnimation(800);
       musicPlayer.playFullFile("/track101.mp3");
       headSetYellow();
       setDefaultPose();
       break;
 
-    case 2:
-      // Head RIGHT RED
-      // Track401 “Court assumes Control”
-      // Track402 “Blender”
-      Serial.println(F("Case 2: Court assumes control + Blender"));
-      headLookRight();
+    case 4:
+      Serial.println(F("Case 4: Court assumes control + Blender"));
+      headLookLeft();
       headSetRed();
       musicPlayer.playFullFile("/track401.mp3");
       musicPlayer.playFullFile("/track402.mp3");
       headLookCenter();
       break;
 
-    case 3:
-      // Track403 “Logs”
-      // Head turns green
-      Serial.println(F("Case 3: Logs"));
+    case 5:
+      Serial.println(F("Case 5: Logs"));
       musicPlayer.playFullFile("/track403.mp3");
       headSetGreen();
       break;
 
-    case 4:
-      // Track404 “preposterous”
-      // Head turns red
-      Serial.println(F("Case 4: Preposterous"));
+    case 6:
+      Serial.println(F("Case 6: Preposterous"));
       headSetRed();
       musicPlayer.playFullFile("/track404.mp3");
       break;
 
-    case 5:
-      // Track405 “over a rug?”
-      // Head turns yellow
-      Serial.println(F("Case 5: Over a rug?"));
+    case 7:
+      Serial.println(F("Case 7: Over a rug?"));
       headSetYellow();
       musicPlayer.playFullFile("/track405.mp3");
       break;
 
-    case 6:
-      // Track406 “impossible”
-      // Head turns yellow
-      // Head turns LEFT to RIGHT NODDING NO
-      Serial.println(F("Case 6: Impossible + NO nod"));
+    case 8:
+      Serial.println(F("Case 8: Impossible + NO nod"));
       headSetYellow();
       musicPlayer.playFullFile("/track406.mp3");
       headShakeNo();
       break;
 
-    case 7:
-      // Track407 “Succulents”
-      // Head STAYS DEFAULT (WHITE)
-      Serial.println(F("Case 7: Succulents"));
+    case 9:
+      Serial.println(F("Case 9: Succulents"));
       musicPlayer.playFullFile("/track407.mp3");
       headSetDefault();
       setDefaultPose();
       break;
 
-    case 8:
-      // Track408 “without wifi”
-      // Lower cigar, turn head RIGHT
-      // Head STAYS default (white)
-      Serial.println(F("Case 8: Without wifi"));
-      cigarSmokeAnimation(800);       // quick puff, leave ember on
+    case 10:
+      Serial.println(F("Case 10: Without wifi"));
+      cigarSmokeAnimation(4400);
       cigarOff();
       headSetDefault();
       musicPlayer.playFullFile("/track408.mp3");
       setDefaultPose();
       break;
 
-    case 9:
-      // Track409 “objection”
-      // Gavel bang (sound in track)
-      // Head turns red
-      Serial.println(F("Case 9: Objection"));
+    case 11:
+      Serial.println(F("Case 11: Objection"));
       headSetRed();
       gavelBangOnce();
       musicPlayer.playFullFile("/track409.mp3");
       setDefaultPose();
       break;
 
-    case 10:
-      // Cigar
-      // Track 410 “No, I’m judicially”
-      // Head turns yellow
-      Serial.println(F("Case 10: No, I'm judicially"));
+    case 12:
+      Serial.println(F("Case 12: No, I'm judicially"));
       cigarSmokeAnimation(800);
       musicPlayer.playFullFile("/track410.mp3");
       setDefaultPose();
       headSetYellow();
       break;
 
-    case 11:
-      // Track411 “Court adjourned”
-      // Gavel bang x2
-      // Head turns green
-      Serial.println(F("Case 11: Court adjourned"));
-      gavelBangTwice();
-      musicPlayer.playFullFile("/track411.mp3");
+    case 13:
+      Serial.println(F("Case 13: Court adjourned"));
       headSetGreen();
+      gavelBangTwice();
       setDefaultPose();
+      musicPlayer.playFullFile("/track411.mp3");
       break;
 
-    case 12:
-      // Track501 “Court is now in session”
-      // Gavel bang
-      // Head COLOR DEFAULT
-      Serial.println(F("Case 12: Court is now in session"));
+    case 14:
+      Serial.println(F("Case 14: Court is now in session"));
       gavelBangOnce();
       musicPlayer.playFullFile("/track501.mp3");
       headSetDefault();
       setDefaultPose();
       break;
 
-    case 13:
-      // Track502 “Salsa encourages”
-      // Head turns pink (FLASHING DIFFERENT SHADES TO SHOW BLUSHING)
-      Serial.println(F("Case 13: Salsa encourages (blushing)"));
-      musicPlayer.playFullFile("/track502.mp3");
-      headBlushAnimation(2000);
-      setDefaultPose();
-      break;
-
-    case 14:
-      // Turns to RIGHT
-      // Track503 “Child,”
-      // Head colour wheel (LIKE CASE 0)
-      Serial.println(F("Case 14: Address child with colour wheel"));
-      headLookRight(); // turn RIGHT
-      musicPlayer.playFullFile("/track503.mp3");
-      headColorWheelAnimation(2000);
-      break;
-
     case 15:
-      // Child says “i meant mother”
-      // Head red yellow alt
-      Serial.println(F("Case 15: Guilty red/yellow alt"));
-      headRedYellowAltAnimation(2000);
-      headSetRed(); // land on red
+      headBlushAnimation(2000);
+      Serial.println(F("Case 15: Salsa encourages (blushing)"));
+      musicPlayer.playFullFile("/track502.mp3");
       setDefaultPose();
       break;
 
     case 16:
-      // Track504 “child, that is priv”
-      // Head L to R (NO, NO) turns pink (BLUSHING, SAME AS CASE 13)
-      Serial.println(F("Case 16: Child, that is priv (NO + blush)"));
+      Serial.println(F("Case 16: Child, colour wheel"));
+      headLookRight();
+            headColorWheelAnimation(2000);
+      musicPlayer.playFullFile("/track503.mp3");
+      break;
+
+    case 17:
+      headRedYellowAltAnimation(2000);
+      headSetRed();
+      Serial.println(F("Case 17: Guilty red/yellow alt"));
+      setDefaultPose();
+      break;
+
+    case 18:
+      Serial.println(F("Case 18: Child, that is priv (NO + blush)"));
       musicPlayer.playFullFile("/track504.mp3");
       headShakeNo();
       headBlushAnimation(2000);
       setDefaultPose();
       break;
 
-    case 17:
-      // Head turn SLOWLY LEFT-RIGHT-LEFT
-      // Track505 “say smtg”
-      // Head red yellow alt
-      Serial.println(F("Case 17: Say something (slow left-right-left + guilty lights)"));
+    case 19:
+      Serial.println(F("Case 19: Say something"));
       headSlowJitterToWife();
       musicPlayer.playFullFile("/track505.mp3");
+      setDefaultPose();
       headRedYellowAltAnimation(2000);
-      setDefaultPose();
-      break;
-
-    case 18:
-      // Track506 “we were studying”
-      // Head turns away (L) and pink
-      Serial.println(F("Case 18: We were studying"));
-      musicPlayer.playFullFile("/track506.mp3");
-      headLookLeft();
-      headBlushAnimation(2000);
-      break;
-
-    case 19:
-      // Track507 “court will be rec”
-      // Gavel bang x2
-      Serial.println(F("Case 19: Court will be rec"));
-      musicPlayer.playFullFile("/track507.mp3");
-      gavelBangTwice();
-      setDefaultPose();
       break;
 
     case 20:
-      // Track508 “too late”
-      // Cigar SERVO (UP)
-      // CIGAR NEO LIGHTS RED
-      Serial.println(F("Case 20: Too late (cigar up, red ring)"));
+      Serial.println(F("Case 20: We were studying"));
+      headBlushAnimation(2000);
+      musicPlayer.playFullFile("/track506.mp3");
+      headLookLeft();
+      break;
+
+    case 21:
+      Serial.println(F("Case 21: Court will be rec"));
+      gavelBangOnce();
+      musicPlayer.playFullFile("/track507.mp3");
+      setDefaultPose();
+      break;
+
+    case 22:
+      Serial.println(F("Case 22: Too late (cigar up, red ring)"));
       musicPlayer.playFullFile("/track508.mp3");
-      cigarSetColor(255, 0, 0);  // full red ring (now actually red)
+      moveServoSmooth(SERVO_CIGAR, CIGAR_UP_ANGLE, 3, 15);
+      cigarSetColor(255, 0, 0);
       setDefaultPose();
       break;
 
     default:
-      // Any unused state: reset to a neutral look
       Serial.println(F("Unknown state, resetting visuals"));
       setDefaultPose();
       break;
     }
   }
 }
-
-// end of receiver code
-// CHANGEHERE
