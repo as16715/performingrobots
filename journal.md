@@ -435,5 +435,24 @@ In the days leading up to the final performance, I painted the remaining artifac
 
 This week emphasized the realities of preparing a robot for live performance. Many systems that worked independently had to be reinforced, simplified, or rethought once rehearsals introduced unpredictability. By addressing audio quality, stability, and durability, the robot became significantly more reliable and visually cohesive going into the final performance.
 
+---
+
+## Final Performance Reflection  
+
+Looking back at this semester, I have so many thoughts swirling around. I think my biggest regret is not taking more pictures—both of the final robot and throughout the entire process. Sometimes the little wins at the end of each week would have felt so much bigger if I had documented them properly. Instead, a lot of the memories live in my head, which is fine, but having a visual record would have been something special.  
+
+I’ve wanted to take this class since sophomore year when I first switched my major to IM, and finally getting into it in my senior year has been such a blessing. Even though I do wish I had done more, I am incredibly proud of what we accomplished. There are little things I wish I could have added—like the cigar mist for the robot—that didn’t make it to the final version. I remember being so ready for this project at the start: I even found my old diffuser and unscrewed all its electronics to see if I could attach it to the robot. In hindsight, it would have needed more planning—like where to store the water or how to make the mist visible—but just that initial curiosity and excitement reminded me how much I love building things.  
+
+I’m genuinely happy with where we ended. This project threw countless challenges our way—mechanical issues, code bugs, unexpected failures—but each one taught me something. As much as I tried to anticipate problems, there were always new surprises. And yet, the planning, debugging, and thought process we put in really did make a difference. They eased a lot of potential headaches and helped us keep moving forward, week by week.  
+
+Looking back, some of my favorite moments weren’t the big “goal achieved” milestones, but the small victories—the first time the head moved without tipping, finally getting the NeoPixels to work, or just seeing the robot dressed and performing a single motion correctly. Those moments reminded me why I wanted to take this class in the first place: to create something alive, something that moves, reacts, and tells a story.  
+
+All in all, this class has been a perfect combination of frustration, excitement, and joy. I learned so much—not just about robots, code, and electronics, but also about patience, persistence, and the thrill of seeing an idea come to life. Even the challenges now feel like part of the story, part of the process that made the final performance feel earned and meaningful.  
+
+I’m grateful for this experience, for the guidance of the professor, for my partner’s collaboration, and for the chance to finally bring this robot to life. It’s been messy, it’s been tricky, but it’s also been one of the most rewarding projects I’ve ever done. And despite the things I wish I could have done differently, I wouldn’t change the feeling of building it, week by week, from nothing to a fully performative robot.  
+
+![Final performance reflection](/images/reflection.jpg)
+
+
 
 
