@@ -1,4 +1,4 @@
-# Project Journal – nRF24 Communication Setup
+# Project Journal 
 
 ---
 
@@ -41,7 +41,7 @@ While this control scheme proved somewhat difficult to manage precisely, it succ
 
 ### Media Documentation
 
-![Motor testing and RC control](/images/motor.mp4)
+[![Motor testing and RC control](https://img.youtube.com/vi/zdoEg5ewHg8/0.jpg)](https://youtube.com/shorts/zdoEg5ewHg8)
 
 
 **Date:** 11/6/2025
