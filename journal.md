@@ -1,5 +1,49 @@
 # Project Journal – nRF24 Communication Setup
 
+---
+
+## Week of September 30, 2025  
+**Focus:** Motor Control and RC Receiver Pairing
+
+### Hardware Used
+* RC Receiver  
+* RC Handheld Controller  
+* DC Motors  
+* Power Supply  
+
+### Objective
+To establish reliable communication between the RC controller and RC receiver in order to test basic motor movement and directional control for the robot base.
+
+### Process and Challenges
+
+During this week, the primary focus was connecting and pairing the RC receiver with the handheld RC controller to enable motor movement. We encountered a persistent issue where the RC receiver failed to properly connect. Instead of indicating a successful pairing with a steady green LED, the receiver continuously beeped, signaling that it was unable to bind to the controller.
+
+To troubleshoot this issue, we tried several approaches:
+* Moving to a different physical location to avoid interference from other RC controllers
+* Rechecking all wiring connections between the receiver, motor controller, and power source
+* Power cycling the system multiple times
+
+Despite these efforts, the receiver continued to fail to pair correctly.
+
+### Breakthrough Solution
+
+The issue was ultimately resolved by performing a specific reset sequence on the RC receiver. Using a small screwdriver, we pressed the reset button **three times quickly, followed by two slow presses**, repeating the sequence several times. After this procedure, the receiver LED finally became a steady green, indicating a successful connection to the controller.
+
+This step was critical, as it was not clearly documented in the provided materials and required experimentation and persistence.
+
+### Motor Testing and Control
+
+Once the receiver successfully paired, we moved on to testing motor behavior and modifying the control logic. We mapped:
+* The **trigger** on the controller to change direction
+* The **scroll wheel** to control forward and backward movement
+
+While this control scheme proved somewhat difficult to manage precisely, it successfully demonstrated that all components were communicating correctly. The robot base was able to move forward, backward, and change direction as intended, confirming that the motor system was functional.
+
+### Media Documentation
+
+![Motor testing and RC control](/images/motor.mp4)
+
+
 **Date:** 11/6/2025
 
 ## Hardware Used
