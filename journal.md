@@ -43,8 +43,57 @@ While this control scheme proved somewhat difficult to manage precisely, it succ
 
 [![Motor testing and RC control](https://img.youtube.com/vi/zdoEg5ewHg8/0.jpg)](https://youtube.com/shorts/zdoEg5ewHg8)
 
+---
 
-**Date:** 11/6/2025
+## Week of October 9, 2025  
+**Focus:** Body Structure, Weight Testing, and Early Form Experiments
+
+### Materials and Components Used
+* Robot base with motors  
+* Long cardboard pipe (body foundation)  
+* L-brackets  
+* Screws and fasteners  
+* Bamboo sticks  
+* Cling film  
+* Hot glue  
+* Balloon  
+
+### Objective
+To establish a lightweight structural foundation for the robot body and test how additional vertical mass would affect balance, mobility, and drivability of the robot base.
+
+### Structural Decisions and Assembly
+
+This week, we found a long cardboard pipe that we decided to use as the main structural element for the robot’s body. Instead of using heavier materials such as wooden planks, we chose the cardboard pipe as a lightweight alternative that would allow us to build vertically without immediately overloading the small motorized base.
+
+The pipe was attached to the base using L-brackets, securely screwed into place. This allowed the structure to stand upright while remaining modular enough to adjust or remove later if needed.
+
+### Movement and Weight Testing
+
+After mounting the pipe, we conducted movement tests to evaluate whether the added structure affected the robot’s ability to drive, turn, or balance. The results were surprisingly positive. The cardboard pipe added minimal weight and did not significantly interfere with the base’s mobility or control.
+
+Choosing a lightweight material early on felt important, as we anticipated the body becoming heavier later in the semester with additional components. By keeping the initial structure light, we aimed to prevent balancing issues and motor strain in future iterations.
+
+### Media Documentation
+
+[![Base movement test with cardboard pipe](https://img.youtube.com/vi/Y9p4qHg4FWY/0.jpg)](https://youtube.com/shorts/Y9p4qHg4FWY)
+
+### Early Body and Head Prototyping
+
+In addition to testing the body foundation, we began experimenting with constructing a head and torso using unconventional materials. We cut holes into the cardboard pipe and inserted bamboo sticks in a criss-cross arrangement to serve as attachment points.
+
+For the head, we inflated a balloon, wrapped it completely in cling film, and then traced a grid pattern over the surface using hot glue. This process gave the form structure and rigidity. Once the glue dried, we popped the balloon, leaving behind a lightweight, hollow head shape.
+
+To create the body form, we used a similar method by wrapping cling film around my own body, cutting it off, and reinforcing it with hot glue. This resulted in a human-scale shell that suggested a performative, sculptural presence rather than a purely mechanical one.
+
+These components were set aside for later integration, as we planned to design more secure attachment methods to connect the head and body forms to the central pipe structure.
+
+### Reflection
+
+This week marked a shift from purely mechanical testing toward thinking about the robot's appearance. The use of lightweight, flexible materials allowed us to explore form without sacrificing mobility.
+
+---
+
+## Week of November 11, 2025 
 
 ## Hardware Used
 
